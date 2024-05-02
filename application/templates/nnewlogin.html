@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <style>
+      /* Your CSS styles here */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      input[type="number"],
+      select,
+      button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      /* Add styles for valid and invalid passwords */
+      .valid-password {
+        border-color: green;
+      }
+
+      .invalid-password {
+        border-color: red;
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form id="userTypeForm">
+        <h2></h2>
+        <fieldset>
+          <legend>Are you a new or existing user?</legend>
+          <label
+            ><input type="radio" name="userType" value="new" required />New
+            User</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="userType"
+              value="existing"
+              required
+            />Existing User</label
+          >
+        </fieldset>
+        <button type="button" onclick="showForm()">Proceed</button>
+      </form>
+
+      <form id="registrationForm" action="/register" method="POST">
+        <h2>Profile Creation</h2>
+        <input
+          type="text"
+          name="regEmailOrMobile"
+          id="regEmailOrMobile"
+          placeholder="Email or Mobile Number"
+          required
+        />
+        <input
+          type="text"
+          name="regUserID"
+          id="regUserID"
+          placeholder="User ID"
+          required
+        />
+        <input
+          type="password"
+          name="createPassword"
+          id="createPassword"
+          placeholder="Create Password"
+          required
+        />
+        <input
+          type="password"
+          name="confirmPassword"
+          id="confirmPassword"
+          placeholder="Confirm Password"
+          required
+        />
+        <input type="number" name="age" id="age" placeholder="Age" required />
+        <select name="gender" id="gender" required>
+          <option value="" disabled selected>Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+        <button type="submit">Sign Up</button>
+      </form>
+
+      <form id="loginForm" style="display: none">
+        <h2>Login</h2>
+        <input
+          type="text"
+          id="loginEmailOrMobile"
+          placeholder="Email or Mobile Number"
+          required
+        />
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+
+    <script>
+      // Function to show the appropriate form based on user type selection
+      function showForm() {
+        const userType = document.querySelector(
+          'input[name="userType"]:checked'
+        ).value;
+
+        if (userType === "new") {
+          document.getElementById("userTypeForm").style.display = "none";
+          document.getElementById("registrationForm").style.display = "block";
+        } else if (userType === "existing") {
+          document.getElementById("userTypeForm").style.display = "none";
+          document.getElementById("loginForm").style.display = "block";
+        }
+      }
+
+      // Function to validate password complexity
+      function isPasswordValid(password) {
+        // Regex for password complexity: at least 8 characters long
+        // and contain at least one lowercase letter, one uppercase letter, one number, and one special symbol
+        const passwordRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return passwordRegex.test(password);
+      }
+
+      // Function to validate age range
+      function isAgeValid(age) {
+        return age >= 18 && age <= 80;
+      }
+
+      // Function to check if passwords match and update input field border color
+      function checkPasswordsMatch() {
+        const createPassword = document
+          .getElementById("createPassword")
+          .value.trim();
+        const confirmPassword = document
+          .getElementById("confirmPassword")
+          .value.trim();
+
+        // Get input fields
+        const createPasswordField = document.getElementById("createPassword");
+        const confirmPasswordField = document.getElementById("confirmPassword");
+
+        // If passwords match, set border color to green, otherwise to red
+        if (createPassword === confirmPassword) {
+          createPasswordField.classList.remove("invalid-password");
+          confirmPasswordField.classList.remove("invalid-password");
+          createPasswordField.classList.add("valid-password");
+          confirmPasswordField.classList.add("valid-password");
+        } else {
+          createPasswordField.classList.remove("valid-password");
+          confirmPasswordField.classList.remove("valid-password");
+          createPasswordField.classList.add("invalid-password");
+          confirmPasswordField.classList.add("invalid-password");
+        }
+      }
+
+      // Add event listener to password fields to check for password match on input change
+      document
+        .getElementById("createPassword")
+        .addEventListener("input", checkPasswordsMatch);
+      document
+        .getElementById("confirmPassword")
+        .addEventListener("input", checkPasswordsMatch);
+
+      // Function to register a new user
+      document
+        .getElementById("registrationForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          // Gather form data
+          const regEmailOrMobile = document
+            .getElementById("regEmailOrMobile")
+            .value.trim();
+          const regUserID = document.getElementById("regUserID").value.trim();
+          const createPassword = document
+            .getElementById("createPassword")
+            .value.trim();
+          const confirmPassword = document
+            .getElementById("confirmPassword")
+            .value.trim();
+          const age = parseInt(document.getElementById("age").value.trim());
+          const gender = document.getElementById("gender").value;
+
+          // Client-side validation
+          if (!isPasswordValid(createPassword)) {
+            alert(
+              "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special symbol."
+            );
+            return;
+          }
+
+          if (!isAgeValid(age)) {
+            alert("Age must be between 18 and 80.");
+            return;
+          }
+
+          if (createPassword !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+          }
+
+          // Submit the form
+          this.submit();
+        });
+    </script>
+  </body>
+</html>
